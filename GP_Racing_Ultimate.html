@@ -1,1039 +1,467 @@
 
-
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="de">
-
 <head>
-
-<meta charset="utf-8">
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
 <title>GP Racing Ultimate</title>
-
 <style>
-
-:root{--orange:#ff6b24;--cyan:#42d9ff;--panel:rgba(7,15,29,.88)}
-
 *{box-sizing:border-box}
-
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07101d;color:#fff;font-family:Arial,sans-serif}
-
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07101d;color:white;font-family:Arial,sans-serif}
 canvas{display:block}
-
-#menu{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,rgba(3,9,20,.93),rgba(5,20,36,.72)),radial-gradient(circle at 75% 25%,#24435b,#07101d 65%);z-index:5}
-
-.panel{width:min(920px,94vw);max-height:94vh;overflow:auto;padding:28px;border:1px solid #35516a;border-radius:18px;background:linear-gradient(145deg,rgba(12,28,46,.97),rgba(5,12,24,.97));box-shadow:0 20px 80px #000a}
-
-h1{font-size:clamp(34px,7vw,68px);line-height:.9;margin:0 0 8px;font-style:italic;letter-spacing:-3px}
-
-h1 span{color:var(--orange)}
-
-.sub{color:#9eb5c8;letter-spacing:3px;font-size:12px;margin-bottom:24px}
-
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-
+button,select,input{font:inherit}
+button{border:0;border-radius:9px;padding:13px 17px;font-weight:bold;background:#ff6b24;color:#07101d;cursor:pointer}
+button.secondary{background:#18324a;color:white;border:1px solid #45627c}
+#menu{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:linear-gradient(130deg,#06101ef5,#102b43ee)}
+.panel{width:min(900px,94vw);max-height:95vh;overflow:auto;padding:25px;border:1px solid #45627c;border-radius:18px;background:#091827f5}
+h1{font-size:clamp(35px,7vw,65px);font-style:italic;margin:0 0 8px}
+h1 span{color:#ff6b24}
+.sub{color:#9bb2c7;letter-spacing:2px;font-size:12px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field{background:#10243a;border:1px solid #29435b;padding:13px;border-radius:10px}
-
-.field label{display:block;font-size:11px;color:#9bb2c7;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-
-select,input,button{font:inherit}
-
-select,input{width:100%;background:#071522;color:white;border:1px solid #36536d;border-radius:7px;padding:11px}
-
-button{cursor:pointer;border:0;border-radius:8px;padding:13px 18px;font-weight:900;letter-spacing:1px;color:#07101d;background:var(--orange);text-transform:uppercase}
-
-button.secondary{background:#18324a;color:#e9f6ff;border:1px solid #35546d}
-
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
-
-.hint{font-size:12px;color:#91a9bd;line-height:1.5;margin-top:16px}
-
+label{display:block;color:#a8bfd2;font-size:11px;margin-bottom:8px;text-transform:uppercase}
+select,input{width:100%;background:#071522;color:white;border:1px solid #45627c;border-radius:7px;padding:11px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hint{font-size:12px;color:#9bb2c7;line-height:1.5;margin-top:14px}
+#room{display:flex;gap:8px}
+#room input{min-width:0}
 #hud{display:none;position:absolute;inset:0;pointer-events:none}
-
-.top{display:flex;justify-content:space-between;padding:18px;gap:10px}
-
-.chip{background:var(--panel);border:1px solid #426078;border-radius:9px;padding:10px 14px;backdrop-filter:blur(8px);font-weight:bold}
-
-.chip small{display:block;color:#8eaabd;font-size:9px;letter-spacing:1px}
-
-.big{font-size:25px;color:white}
-
-#status{position:absolute;top:85px;left:50%;transform:translateX(-50%);text-align:center;background:#071522cc;padding:8px 16px;border-radius:8px;font-size:12px}
-
-#controls{position:absolute;bottom:20px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:end}
-
-.steer{display:flex;gap:10px}
-
-.touch{pointer-events:auto;width:66px;height:60px;border-radius:12px;background:#102b43dd;color:white;border:1px solid #4c718d;font-size:22px;touch-action:none}
-
-.pedals{display:flex;gap:10px}
-
-.pedals .touch{height:75px;width:76px;font-size:12px}
-
+.top{display:flex;justify-content:space-between;padding:12px;gap:7px}
+.chip{background:#071522dd;border:1px solid #45627c;border-radius:9px;padding:9px 12px;font-weight:bold}
+.chip small{display:block;color:#9bb2c7;font-size:9px}
+.big{font-size:23px}
+#status{position:absolute;top:85px;left:50%;transform:translateX(-50%);background:#071522dd;padding:10px 16px;border-radius:8px;text-align:center;white-space:nowrap}
+#controls{position:absolute;bottom:18px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:end}
+.steer,.pedals{display:flex;gap:9px}
+.touch{pointer-events:auto;touch-action:none;width:62px;height:58px;border-radius:12px;background:#102b43dd;color:white;border:1px solid #66849b;font-size:20px}
+.pedals .touch{height:72px;width:76px;font-size:12px}
 .gas{background:#126b4b}
-
 .brake{background:#8c2630}
-
-#cheat{display:none;position:absolute;z-index:8;top:50%;left:50%;transform:translate(-50%,-50%);width:min(330px,90vw);padding:20px;background:#080d18f2;border:2px solid var(--orange);border-radius:14px;pointer-events:auto}
-
-#cheat h2{margin:0 0 12px;color:var(--orange)}
-
-#cheat label{display:block;font-size:12px;margin:12px 0 4px}
-
+#cheat{display:none;position:absolute;z-index:10;top:50%;left:50%;transform:translate(-50%,-50%);width:min(330px,90vw);padding:20px;background:#080d18f5;border:2px solid #ff6b24;border-radius:14px}
+#cheat h2{color:#ff6b24;margin-top:0}
 #cheat input{padding:0}
-
-#room{display:flex;gap:8px;margin-top:8px}
-
-#room input{flex:1}
-
-@media(max-width:600px){
-
-.panel{padding:19px}
-
-.grid{grid-template-columns:1fr}
-
-.top{padding:9px}
-
-.chip{padding:7px 9px}
-
-.big{font-size:19px}
-
-.touch{width:58px;height:54px}
-
-}
-
+#error{display:none;position:absolute;z-index:20;top:10px;left:10px;right:10px;background:#761c27;color:white;padding:14px;border-radius:9px}
+@media(max-width:600px){.panel{padding:17px}.grid{grid-template-columns:1fr}.top{padding:7px}.chip{padding:7px}.big{font-size:18px}.touch{width:55px;height:53px}}
 </style>
-
 </head>
-
 <body>
 
+<div id="error"></div>
+
 <div id="menu">
-
 <div class="panel">
-
 <h1>GP RACING <span>ULTIMATE</span></h1>
-
 <div class="sub">NEXT GENERATION GRAND PRIX EXPERIENCE</div>
 
 <div class="grid">
-
 <div class="field">
-
 <label>Rennstrecke</label>
-
 <select id="track">
-
 <option value="baku">Baku City Circuit</option>
-
 <option value="monaco">Monaco</option>
-
 <option value="silverstone">Silverstone</option>
-
 <option value="spa">Spa-Francorchamps</option>
-
 </select>
-
 </div>
-
 <div class="field">
-
 <label>Teamfarbe</label>
-
 <select id="team">
-
 <option value="#ff3038">Rot – Scuderia</option>
-
 <option value="#20a4ff">Blau – Racing</option>
-
 <option value="#e8e8e8">Silber – GP</option>
-
 <option value="#ff9d22">Orange – Papaya</option>
-
 <option value="#27d17c">Grün – Motorsport</option>
-
 </select>
-
 </div>
-
 <div class="field">
-
 <label>Runden</label>
-
 <select id="laps">
-
 <option>3</option><option selected>5</option><option>10</option><option>20</option>
-
 </select>
-
 </div>
-
 <div class="field">
-
 <label>Grafikqualität</label>
-
 <select id="quality">
-
 <option value="high">Ultra</option>
-
 <option value="medium">Hoch</option>
-
 <option value="low">Leistung</option>
-
 </select>
-
+</div>
 </div>
 
-</div>
-
-<div class="field" style="margin-top:14px">
-
+<div class="field" style="margin-top:13px">
 <label>Online-Multiplayer – Raumcode</label>
-
 <div id="room">
-
-<input id="roomcode" maxlength="6" placeholder="Code eingeben (z. B. 4821)">
-
+<input id="roomcode" maxlength="6" placeholder="Raumcode">
 <button class="secondary" id="join">Beitreten</button>
-
 </div>
-
 <div class="actions">
-
-<button id="create" class="secondary">Raum erstellen</button>
-
+<button class="secondary" id="create">Raum erstellen</button>
 <button id="start">Rennen starten</button>
-
 </div>
-
-<div class="hint" id="netmsg">Online benötigt eine Internetverbindung. Erstelle einen Raum und teile den Code mit deinem Freund.</div>
-
+<div class="hint" id="netmsg">Für Online-Multiplayer brauchen beide Spieler Internet.</div>
 </div>
-
-<div class="hint">Steuerung: WASD oder Pfeiltasten · Leertaste = Handbremse · Auf dem Handy die Tasten unten benutzen.<br>Geheimes Cheat-Menü bleibt erhalten.</div>
-
+<div class="hint">Steuerung: WASD oder Pfeiltasten. Leertaste = Handbremse. Auf dem iPad die Tasten unten benutzen.<br>Cheat-Menü: 6-mal Gas, danach 7-mal Bremse.</div>
 </div>
-
 </div>
 
 <div id="hud">
-
 <div class="top">
-
-<div class="chip"><small>GESCHWINDIGKEIT</small><span class="big" id="speed">0</span> <small style="display:inline">KM/H</small></div>
-
+<div class="chip"><small>GESCHWINDIGKEIT</small><span class="big" id="speed">0</span> <small>KM/H</small></div>
 <div class="chip"><small>RUNDE</small><span class="big" id="lap">1/5</span></div>
-
 <div class="chip"><small>POSITION</small><span class="big" id="pos">1/4</span></div>
-
 <div class="chip"><small>ZEIT</small><span class="big" id="timer">00:00.000</span></div>
-
 </div>
-
 <div id="status">3 · 2 · 1 · LOS!</div>
-
 <div id="controls">
-
 <div class="steer">
-
 <button class="touch" data-key="ArrowLeft">◀</button>
-
 <button class="touch" data-key="ArrowRight">▶</button>
-
 </div>
-
 <div class="pedals">
-
 <button class="touch brake" data-key="ArrowDown">BREMSEN</button>
-
 <button class="touch gas" data-key="ArrowUp">GAS</button>
-
 </div>
-
 </div>
-
 </div>
 
 <div id="cheat">
-
 <h2>CHEAT GARAGE</h2>
-
 <label>Höchstgeschwindigkeit</label>
-
 <input id="cheatspeed" type="range" min="1" max="3" step=".1" value="1">
-
 <label>Grip</label>
-
 <input id="cheatgrip" type="range" min=".5" max="2" step=".1" value="1">
-
 <label>Beschleunigung</label>
-
 <input id="cheatacc" type="range" min=".5" max="3" step=".1" value="1">
-
 <div class="actions"><button id="closecheat">Schließen</button></div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <script>
-
 (()=>{
-
+"use strict";
 const $=id=>document.getElementById(id);
+const showError=msg=>{$("error").style.display="block";$("error").textContent=msg;};
 
-let scene,camera,renderer,clock,player,remote,ai=[],trackCurve,trackLength=0;
-
-let trackName='baku',running=false,keys={},speed=0,steer=0;
-
-let progress=0,lastProgress=0,lap=1,totalLaps=5,startTime=0;
-
+let scene,camera,renderer,clock,player,remote;
+let ai=[],curve,trackLength=1;
+let running=false,keys={},speed=0,steer=0;
+let lap=1,totalLaps=5,lastProgress=0,startTime=0;
+let trackName="baku";
 let cheat={speed:1,grip:1,acc:1};
-
-let peer=null,conn=null,room='',remoteState=null,lastSend=0;
-
+let peer=null,conn=null,remoteState=null,lastSend=0;
 let gasTaps=0,brakeTaps=0,lastTap=0;
+let animationStarted=false;
 
 const tracks={
-
 baku:[[0,0],[0,70],[18,115],[80,125],[135,105],[145,45],[115,0],[100,-55],[45,-85],[-20,-75],[-75,-40],[-95,20],[-65,65],[-20,55]],
-
 monaco:[[0,0],[35,40],[85,45],[110,10],[90,-25],[55,-45],[15,-35],[-10,-65],[-70,-65],[-95,-20],[-75,25],[-30,35]],
-
 silverstone:[[0,0],[55,35],[115,20],[155,-25],[115,-65],[65,-55],[20,-90],[-35,-80],[-80,-35],[-70,25],[-25,65]],
-
 spa:[[0,0],[20,65],[75,115],[135,95],[160,40],[125,-10],[65,-25],[35,-80],[-25,-105],[-90,-65],[-100,0],[-55,40]]
-
 };
 
-function mat(color,rough=.55,metal=.15){
-
+function material(color,rough=.55,metal=.15){
 return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
-
 }
-
-function box(parent,w,h,d,m,x=0,y=0,z=0){
-
-let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
-
-o.position.set(x,y,z);parent.add(o);return o;
-
+function addBox(parent,w,h,d,mat,x=0,y=0,z=0){
+const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+mesh.position.set(x,y,z);parent.add(mesh);return mesh;
 }
-
 function buildCar(color){
-
-let g=new THREE.Group();
-
-let body=mat(color,.28,.55),dark=mat(0x111722,.35,.35);
-
-let carbon=mat(0x202a35,.4,.45),tire=mat(0x090b10,.92);
-
-let rim=mat(0x87939e,.25,.8);
-
-let glass=new THREE.MeshStandardMaterial({color:0x071b2b,metalness:.65,roughness:.15});
-
-box(g,1.5,.22,3.5,body,0,.48,0);
-
-box(g,1.1,.2,1.35,body,0,.58,.25);
-
-let nose=new THREE.Mesh(new THREE.ConeGeometry(.48,2,4),body);
-
-nose.rotation.x=Math.PI/2;
-
-nose.rotation.z=Math.PI/4;
-
-nose.position.set(0,.48,2.25);
-
-g.add(nose);
-
-box(g,2,.12,.48,carbon,0,.35,2.55);
-
-box(g,2.35,.13,.62,body,0,.33,-1.7);
-
-box(g,2,.65,.12,dark,0,.95,-1.95);
-
-box(g,.42,.38,1.55,body,-.88,.42,-.1);
-
-box(g,.42,.38,1.55,body,.88,.42,-.1);
-
-let cockpit=new THREE.Mesh(new THREE.SphereGeometry(.48,16,12),glass);
-
-cockpit.scale.set(.75,.55,1.15);
-
-cockpit.position.set(0,.78,-.25);
-
-g.add(cockpit);
-
-box(g,.08,.42,1,dark,0,.88,-.22);
-
-box(g,.08,.08,.5,mat(0xffd45a),0,1.03,-.22);
-
-for(let x of [-.88,.88]){
-
-for(let z of [-1.15,1.15]){
-
-let w=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.28,24),tire);
-
-w.rotation.z=Math.PI/2;
-
-w.position.set(x,.38,z);
-
-g.add(w);
-
-let hub=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.3,16),rim);
-
-hub.rotation.z=Math.PI/2;
-
-hub.position.copy(w.position);
-
-g.add(hub);
-
-box(g,.08,.1,.55,carbon,x*1.17,.38,z);
-
+const g=new THREE.Group();
+const body=material(color,.28,.5),dark=material(0x111722),carbon=material(0x202a35),tire=material(0x080a0d,.95),rim=material(0x87939e,.25,.8);
+addBox(g,1.5,.22,3.5,body,0,.48,0);
+addBox(g,1.1,.2,1.35,body,0,.58,.25);
+const nose=new THREE.Mesh(new THREE.ConeGeometry(.48,2,4),body);
+nose.rotation.x=Math.PI/2;nose.rotation.z=Math.PI/4;nose.position.set(0,.48,2.25);g.add(nose);
+addBox(g,2,.12,.48,carbon,0,.35,2.55);
+addBox(g,2.35,.13,.62,body,0,.33,-1.7);
+addBox(g,2,.65,.12,dark,0,.95,-1.95);
+addBox(g,.42,.38,1.55,body,-.88,.42,-.1);
+addBox(g,.42,.38,1.55,body,.88,.42,-.1);
+const cockpit=new THREE.Mesh(new THREE.SphereGeometry(.48,16,12),material(0x071b2b,.15,.65));
+cockpit.scale.set(.75,.55,1.15);cockpit.position.set(0,.78,-.25);g.add(cockpit);
+for(const x of [-.88,.88]){
+for(const z of [-1.15,1.15]){
+const w=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.28,24),tire);
+w.rotation.z=Math.PI/2;w.position.set(x,.38,z);g.add(w);
+const hub=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.3,16),rim);
+hub.rotation.z=Math.PI/2;hub.position.copy(w.position);g.add(hub);
 }}
-
-box(g,2.35,.12,.15,carbon,0,.22,2.8);
-
-box(g,2.1,.13,.2,body,0,.22,-2.12);
-
-for(let x of [-.65,.65]){
-
-box(g,.08,.08,.65,mat(0xff3030),x,.53,-1.75);
-
-}
-
-g.userData={};
-
+addBox(g,2.35,.12,.15,carbon,0,.22,2.8);
+addBox(g,2.1,.13,.2,body,0,.22,-2.12);
 return g;
-
 }
 
 function makeTrack(){
-
-let pts=tracks[trackName].map(p=>new THREE.Vector3(p[0],0,p[1]));
-
-trackCurve=new THREE.CatmullRomCurve3(pts,true,'catmullrom',.25);
-
-trackLength=trackCurve.getLength();
-
-let samples=240;
-
-let roadPts=trackCurve.getPoints(samples);
-
-let roadGeo=new THREE.BufferGeometry();
-
-let verts=[],idx=[];
-
+const points=tracks[trackName].map(p=>new THREE.Vector3(p[0],0,p[1]));
+curve=new THREE.CatmullRomCurve3(points,true,"catmullrom",.25);
+trackLength=curve.getLength();
+const samples=300,roadPoints=curve.getPoints(samples);
+const vertices=[],indices=[];
 for(let i=0;i<=samples;i++){
-
-let p=roadPts[i];
-
-let t=trackCurve.getTangentAt(i/samples);
-
-let n=new THREE.Vector3(-t.z,0,t.x);
-
-verts.push(
-
-p.x+n.x*8,.08,p.z+n.z*8,
-
-p.x-n.x*8,.08,p.z-n.z*8
-
-);
-
+const p=roadPoints[i],t=curve.getTangentAt(i/samples);
+const n=new THREE.Vector3(-t.z,0,t.x);
+vertices.push(p.x+n.x*8,.08,p.z+n.z*8,p.x-n.x*8,.08,p.z-n.z*8);
 }
-
 for(let i=0;i<samples;i++){
-
-let a=i*2;
-
-idx.push(a,a+2,a+1,a+1,a+2,a+3);
-
+const a=i*2;
+indices.push(a,a+2,a+1,a+1,a+2,a+3);
 }
+const geo=new THREE.BufferGeometry();
+geo.setAttribute("position",new THREE.Float32BufferAttribute(vertices,3));
+geo.setIndex(indices);geo.computeVertexNormals();
+const road=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x252b33,roughness:.95,side:THREE.DoubleSide}));
+road.receiveShadow=true;scene.add(road);
 
-roadGeo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+const grass=new THREE.Mesh(new THREE.PlaneGeometry(900,900),material(0x17452e,1));
+grass.rotation.x=-Math.PI/2;grass.position.y=-.12;scene.add(grass);
 
-roadGeo.setIndex(idx);
-
-roadGeo.computeVertexNormals();
-
-let road=new THREE.Mesh(
-
-roadGeo,
-
-new THREE.MeshStandardMaterial({
-
-color:0x242a32,
-
-roughness:.95,
-
-side:THREE.DoubleSide
-
-})
-
-);
-
-scene.add(road);
-
-let grass=new THREE.Mesh(new THREE.PlaneGeometry(800,800),mat(0x173d2d,1));
-
-grass.rotation.x=-Math.PI/2;
-
-grass.position.y=-.08;
-
-scene.add(grass);
-
-let edgeMat=mat(0xf4f1e8),red=mat(0xe63a3a);
-
+const white=material(0xffffff),red=material(0xe63a3a);
 for(let i=0;i<samples;i+=2){
-
-let p=roadPts[i];
-
-let t=trackCurve.getTangentAt(i/samples);
-
-let n=new THREE.Vector3(-t.z,0,t.x);
-
-for(let side of [-1,1]){
-
-let curb=box(scene,.8,.16,2.1,(i/2)%2?red:edgeMat,p.x+n.x*8.35*side,.18,p.z+n.z*8.35*side);
-
+const p=roadPoints[i],t=curve.getTangentAt(i/samples),n=new THREE.Vector3(-t.z,0,t.x);
+for(const side of [-1,1]){
+const curb=addBox(scene,.8,.16,2.1,(i/2)%2?red:white,p.x+n.x*8.35*side,.18,p.z+n.z*8.35*side);
 curb.rotation.y=Math.atan2(t.x,t.z);
-
 }}
-
-for(let i=0;i<75;i++){
-
-let p=roadPts[Math.floor(i/samples*roadPts.length)];
-
-let t=trackCurve.getTangentAt(i/samples);
-
-let n=new THREE.Vector3(-t.z,0,t.x);
-
-let side=i%2?1:-1;
-
-let x=p.x+n.x*(17+Math.random()*24)*side;
-
-let z=p.z+n.z*(17+Math.random()*24)*side;
-
-if(trackName==='monaco'&&i%3===0){
-
-let b=box(scene,5+Math.random()*5,10+Math.random()*24,5,
-
-mat([0x9aabb5,0xd2c5b5,0x536c80,0xb7a08d][i%4]),x,0,z);
-
-b.position.y=b.geometry.parameters.height/2;
-
+for(let i=0;i<100;i++){
+const p=roadPoints[Math.floor(i/samples*roadPoints.length)];
+const t=curve.getTangentAt(i/samples),n=new THREE.Vector3(-t.z,0,t.x);
+const side=i%2?1:-1;
+const x=p.x+n.x*(19+Math.random()*25)*side;
+const z=p.z+n.z*(19+Math.random()*25)*side;
+if(trackName==="monaco"&&i%3===0){
+const h=10+Math.random()*18;
+const b=addBox(scene,5+Math.random()*5,h,5,material([0x9aabb5,0xd2c5b5,0x536c80,0xb7a08d][i%4]),x,h/2,z);
 }else{
-
-let h=2+Math.random()*5;
-
-let tree=new THREE.Mesh(new THREE.ConeGeometry(1.6,h,7),mat(0x1d6541));
-
-tree.position.set(x,h/2,z);
-
-scene.add(tree);
-
+const h=3+Math.random()*5;
+const tree=new THREE.Mesh(new THREE.ConeGeometry(1.6,h,7),material(0x1d6541));
+tree.position.set(x,h/2,z);scene.add(tree);
 }}
-
-let start=trackCurve.getPointAt(0);
-
-let tan=trackCurve.getTangentAt(0);
-
-let line=box(scene,16,.025,.5,mat(0xffffff),start.x,.16,start.z);
-
+const start=curve.getPointAt(0),tan=curve.getTangentAt(0);
+const line=addBox(scene,16,.04,.6,white,start.x,.17,start.z);
 line.rotation.y=Math.atan2(tan.x,tan.z);
-
 }
 
 function init(){
-
-if(!window.THREE){
-
-alert('Three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.');
-
-return;
-
-}
-
+if(!window.THREE){showError("Three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen und Seite neu laden.");return false;}
+try{
 scene=new THREE.Scene();
-
 scene.background=new THREE.Color(0x91b8d1);
-
-scene.fog=new THREE.Fog(0x91b8d1,120,350);
-
-camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,1000);
-
-renderer=new THREE.WebGLRenderer({antialias:true});
-
+scene.fog=new THREE.Fog(0x91b8d1,180,500);
+camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,1500);
+renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
 renderer.setSize(innerWidth,innerHeight);
-
-renderer.setPixelRatio(Math.min(devicePixelRatio,$('quality').value==='high'?2:1.5));
-
+renderer.setPixelRatio(Math.min(devicePixelRatio,$("quality").value==="high"?1.7:1.2));
 renderer.shadowMap.enabled=true;
-
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-
+renderer.outputEncoding=THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xdceeff,0x26382d,1.25));
-
-let sun=new THREE.DirectionalLight(0xffffff,1.35);
-
-sun.position.set(-60,100,50);
-
-sun.castShadow=true;
-
-sun.shadow.mapSize.set(2048,2048);
-
-scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xdceeff,0x26382d,1.5));
+const sun=new THREE.DirectionalLight(0xffffff,1.4);
+sun.position.set(-60,100,50);sun.castShadow=true;scene.add(sun);
 
 makeTrack();
+player=buildCar($("team").value);scene.add(player);
+const start=curve.getPointAt(.005),tangent=curve.getTangentAt(.005);
+player.position.set(start.x,.35,start.z);
+player.rotation.y=Math.atan2(tangent.x,tangent.z);
 
-player=buildCar($('team').value);
-
-scene.add(player);
-
-let start=trackCurve.getPointAt(.005);
-
-let tan=trackCurve.getTangentAt(.005);
-
-player.position.copy(start);
-
-player.position.y=.3;
-
-player.rotation.y=Math.atan2(tan.x,tan.z);
-
+ai=[];
 for(let i=0;i<3;i++){
-
-let c=buildCar([0x23a6ff,0xffcf35,0xeeeeee][i]);
-
-scene.add(c);
-
-ai.push({car:c,p:(.02+i*.035),speed:.000075+i*.000009});
-
+const car=buildCar([0x23a6ff,0xffcf35,0xeeeeee][i]);
+scene.add(car);
+ai.push({car,p:.02+i*.035,speed:.00007+i*.00001});
 }
-
 if(remoteState){
-
-remote=buildCar(0x44e5ff);
-
-scene.add(remote);
-
+remote=buildCar(0x44e5ff);scene.add(remote);
 }
-
+camera.position.set(player.position.x-12,9,player.position.z-15);
+camera.lookAt(player.position);
 clock=new THREE.Clock();
-
-animate();
-
+if(!animationStarted){animationStarted=true;animate();}
+return true;
+}catch(e){
+showError("Fehler beim Erstellen der Strecke: "+e.message);
+return false;
+}
 }
 
 function animate(){
-
 requestAnimationFrame(animate);
-
-if(!renderer)return;
-
-let dt=Math.min(clock.getDelta(),.04);
-
+if(!renderer||!scene||!camera)return;
+const dt=Math.min(clock.getDelta(),.04);
 if(running)update(dt);
-
 renderer.render(scene,camera);
-
-}
-
-function update(dt){
-
-let forward=keys.ArrowUp||keys.KeyW;
-
-let back=keys.ArrowDown||keys.KeyS;
-
-let left=keys.ArrowLeft||keys.KeyA;
-
-let right=keys.ArrowRight||keys.KeyD;
-
-let max=45*cheat.speed;
-
-if(forward)speed+=26*cheat.acc*dt;
-
-if(back)speed-=45*dt;
-
-speed*=Math.pow(.985,dt*60);
-
-speed=Math.max(-12,Math.min(max,speed));
-
-steer+=(Number(right)-Number(left))*dt*2.3;
-
-steer*=Math.pow(.86,dt*60);
-
-player.rotation.y-=steer*dt*(.7+Math.abs(speed)/55)*cheat.grip;
-
-player.position.add(
-
-new THREE.Vector3(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y)).multiplyScalar(speed*dt*.48)
-
-);
-
-player.position.y=.3;
-
-let nearest=nearestProgress(player.position);
-
-let p=trackCurve.getPointAt(nearest);
-
-let off=player.position.distanceTo(p);
-
-if(off>9)speed*=.985;
-
-if(nearest<lastProgress-.5)lap++;
-
-lastProgress=nearest;
-
-progress=nearest;
-
-ai.forEach((a,i)=>{
-
-a.p=(a.p+a.speed*dt*60)%1;
-
-let q=trackCurve.getPointAt(a.p);
-
-let t=trackCurve.getTangentAt(a.p);
-
-let s=new THREE.Vector3(-t.z,0,t.x);
-
-a.car.position.set(q.x+s.x*(i-1)*2,.3,q.z+s.z*(i-1)*2);
-
-a.car.rotation.y=Math.atan2(t.x,t.z);
-
-});
-
-if(remoteState){
-
-if(!remote){
-
-remote=buildCar(0x44e5ff);
-
-scene.add(remote);
-
-}
-
-remote.position.set(remoteState.x,.3,remoteState.z);
-
-remote.rotation.y=remoteState.r;
-
-}
-
-let cp=player.position.clone().add(
-
-new THREE.Vector3(-Math.sin(player.rotation.y)*10,7,-Math.cos(player.rotation.y)*10)
-
-);
-
-camera.position.lerp(cp,.12);
-
-camera.lookAt(player.position.x,player.position.y+1,player.position.z);
-
-$('speed').textContent=Math.round(Math.abs(speed)*3.6);
-
-$('lap').textContent=Math.min(lap,totalLaps)+'/'+totalLaps;
-
-$('timer').textContent=formatTime(performance.now()-startTime);
-
-if(performance.now()-lastSend>50){
-
-lastSend=performance.now();
-
-if(conn&&conn.open){
-
-conn.send({x:player.position.x,z:player.position.z,r:player.rotation.y});
-
-}}
-
-if(lap>totalLaps){
-
-running=false;
-
-$('status').textContent='ZIEL ERREICHT!';
-
-$('status').style.display='block';
-
-}
-
 }
 
 function nearestProgress(pos){
-
-let best=0,dist=1e9;
-
-for(let i=0;i<=180;i++){
-
-let t=i/180;
-
-let p=trackCurve.getPointAt(t);
-
-let d=p.distanceToSquared(pos);
-
+let best=0,dist=Infinity;
+for(let i=0;i<=240;i++){
+const t=i/240,p=curve.getPointAt(t),d=p.distanceToSquared(pos);
 if(d<dist){dist=d;best=t;}
-
 }
-
 return best;
-
 }
-
 function formatTime(ms){
+const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60,mm=Math.floor(ms%1000);
+return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+"."+String(mm).padStart(3,"0");
+}
+function update(dt){
+const forward=keys.ArrowUp||keys.KeyW,back=keys.ArrowDown||keys.KeyS;
+const left=keys.ArrowLeft||keys.KeyA,right=keys.ArrowRight||keys.KeyD;
+if(forward)speed+=28*cheat.acc*dt;
+if(back)speed-=48*dt;
+speed*=Math.pow(.988,dt*60);
+speed=Math.max(-12,Math.min(48*cheat.speed,speed));
+steer+=(Number(right)-Number(left))*dt*2.5;
+steer*=Math.pow(.86,dt*60);
+player.rotation.y-=steer*dt*(.7+Math.abs(speed)/55)*cheat.grip;
+const direction=new THREE.Vector3(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y));
+player.position.add(direction.multiplyScalar(speed*dt*.48));
+player.position.y=.35;
 
-let m=Math.floor(ms/60000);
+const p=nearestProgress(player.position);
+const center=curve.getPointAt(p);
+if(player.position.distanceTo(center)>10)speed*=.97;
+if(lastProgress>.85&&p<.15)lap++;
+lastProgress=p;
 
-let s=Math.floor(ms/1000)%60;
+ai.forEach((a,i)=>{
+a.p=(a.p+a.speed*dt*60)%1;
+const q=curve.getPointAt(a.p),t=curve.getTangentAt(a.p);
+const side=new THREE.Vector3(-t.z,0,t.x);
+a.car.position.set(q.x+side.x*(i-1)*2,.35,q.z+side.z*(i-1)*2);
+a.car.rotation.y=Math.atan2(t.x,t.z);
+});
 
-let mm=Math.floor(ms%1000);
+if(remoteState){
+if(!remote){remote=buildCar(0x44e5ff);scene.add(remote);}
+remote.position.lerp(new THREE.Vector3(remoteState.x,.35,remoteState.z),.35);
+remote.rotation.y=remoteState.r;
+}
+const camPos=player.position.clone().add(new THREE.Vector3(-Math.sin(player.rotation.y)*11,7,-Math.cos(player.rotation.y)*11));
+camera.position.lerp(camPos,.12);
+camera.lookAt(player.position.x,player.position.y+1,player.position.z);
 
-return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(mm).padStart(3,'0');
+$("speed").textContent=Math.round(Math.abs(speed)*3.6);
+$("lap").textContent=Math.min(lap,totalLaps)+"/"+totalLaps;
+$("timer").textContent=formatTime(performance.now()-startTime);
+const positions=[{p:nearestProgress(player.position),player:true},...ai.map(a=>({p:a.p}))];
+positions.sort((a,b)=>b.p-a.p);
+$("pos").textContent=(positions.findIndex(x=>x.player)+1)+"/4";
 
+if(conn&&conn.open&&performance.now()-lastSend>50){
+lastSend=performance.now();
+conn.send({x:player.position.x,z:player.position.z,r:player.rotation.y});
+}
+if(lap>totalLaps){
+running=false;
+$("status").textContent="ZIEL ERREICHT!";
+$("status").style.display="block";
+}
 }
 
 function startRace(){
-
-totalLaps=Number($('laps').value);
-
-trackName=$('track').value;
-
-$('menu').style.display='none';
-
-$('hud').style.display='block';
-
-$('status').textContent='3 · 2 · 1 · LOS!';
-
-init();
-
+if(running)return;
+totalLaps=Number($("laps").value);
+trackName=$("track").value;
+lap=1;lastProgress=0;speed=0;steer=0;remoteState=null;remote=null;
+$("error").style.display="none";
+$("menu").style.display="none";
+$("hud").style.display="block";
+if(!init()){
+$("menu").style.display="flex";$("hud").style.display="none";return;
+}
 startTime=performance.now();
-
 running=true;
-
+$("status").textContent="VIEL ERFOLG!";
+setTimeout(()=>{$("status").style.display="none";},2500);
 }
+$("start").onclick=startRace;
 
-$('start').onclick=startRace;
-
-$('create').onclick=()=>{
-
-if(!window.Peer){
-
-$('netmsg').textContent='Multiplayer-Dienst konnte nicht geladen werden.';
-
-return;
-
-}
-
-let code=String(Math.floor(1000+Math.random()*9000));
-
-$('roomcode').value=code;
-
-room=code;
-
-peer=new Peer('gp-ultimate-'+code);
-
-$('netmsg').textContent='Verbinde…';
-
-peer.on('open',()=>{
-
-$('netmsg').textContent='Raum '+code+' erstellt! Teile diesen Code mit deinem Freund.';
-
-});
-
-peer.on('connection',c=>{
-
-conn=c;
-
-setupConn(c);
-
-});
-
+$("create").onclick=()=>{
+if(!window.Peer){$("netmsg").textContent="Multiplayer-Dienst konnte nicht geladen werden.";return;}
+if(peer)peer.destroy();
+const code=String(Math.floor(1000+Math.random()*9000));
+$("roomcode").value=code;
+$("netmsg").textContent="Raum wird erstellt…";
+peer=new Peer("gp-ultimate-"+code);
+peer.on("open",()=>{$("netmsg").textContent="Raum "+code+" erstellt. Teile den Code mit deinem Freund.";});
+peer.on("connection",c=>{conn=c;setupConnection(c);});
+peer.on("error",e=>{$("netmsg").textContent="Netzwerkfehler: "+e.type;});
 };
-
-$('join').onclick=()=>{
-
-let code=$('roomcode').value.trim();
-
-if(!/^\d{4,6}$/.test(code)){
-
-$('netmsg').textContent='Bitte einen 4- bis 6-stelligen Code eingeben.';
-
-return;
-
-}
-
-if(!window.Peer){
-
-$('netmsg').textContent='Multiplayer-Dienst nicht verfügbar.';
-
-return;
-
-}
-
+$("join").onclick=()=>{
+const code=$("roomcode").value.trim();
+if(!/^\d{4,6}$/.test(code)){$("netmsg").textContent="Bitte einen 4- bis 6-stelligen Code eingeben.";return;}
+if(!window.Peer){$("netmsg").textContent="Multiplayer-Dienst nicht verfügbar.";return;}
+if(peer)peer.destroy();
 peer=new Peer();
-
-peer.on('open',()=>{
-
-conn=peer.connect('gp-ultimate-'+code);
-
-setupConn(conn);
-
+peer.on("open",()=>{
+conn=peer.connect("gp-ultimate-"+code);
+setupConnection(conn);
 });
-
+peer.on("error",e=>{$("netmsg").textContent="Verbindungsfehler: "+e.type;});
 };
-
-function setupConn(c){
-
-c.on('open',()=>{
-
-$('netmsg').textContent='Online verbunden! Starte das Rennen.';
-
-if(running&&!remote){
-
-remote=buildCar(0x44e5ff);
-
-scene.add(remote);
-
+function setupConnection(c){
+c.on("open",()=>{$("netmsg").textContent="Online verbunden! Beide Spieler können starten.";});
+c.on("data",d=>{
+if(d&&typeof d.x==="number")remoteState=d;
+});
+c.on("close",()=>{$("netmsg").textContent="Verbindung getrennt.";});
 }
 
-});
-
-c.on('data',d=>{
-
-remoteState=d;
-
-if(running&&!remote){
-
-remote=buildCar(0x44e5ff);
-
-scene.add(remote);
-
-}
-
-});
-
-c.on('close',()=>{
-
-$('netmsg').textContent='Verbindung getrennt.';
-
-});
-
-}
-
-window.addEventListener('keydown',e=>{
-
+window.addEventListener("keydown",e=>{
 keys[e.code]=true;
-
-if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
-
-if(e.code==='Space')speed*=.94;
-
-if(e.code==='ArrowUp'||e.code==='KeyW')tap('g');
-
-if(e.code==='ArrowDown'||e.code==='KeyS')tap('b');
-
+if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code))e.preventDefault();
+if(e.code==="Space")speed*=.94;
+if(e.code==="ArrowUp"||e.code==="KeyW")tap("g");
+if(e.code==="ArrowDown"||e.code==="KeyS")tap("b");
 });
+window.addEventListener("keyup",e=>keys[e.code]=false);
 
-window.addEventListener('keyup',e=>keys[e.code]=false);
-
-document.querySelectorAll('.touch').forEach(b=>{
-
-let k=b.dataset.key;
-
-b.addEventListener('pointerdown',e=>{
-
-e.preventDefault();
-
-keys[k]=true;
-
-if(k==='ArrowUp')tap('g');
-
-if(k==='ArrowDown')tap('b');
-
+document.querySelectorAll(".touch").forEach(b=>{
+const k=b.dataset.key;
+b.addEventListener("pointerdown",e=>{
+e.preventDefault();keys[k]=true;
+if(k==="ArrowUp")tap("g");
+if(k==="ArrowDown")tap("b");
 });
-
-['pointerup','pointerleave','pointercancel'].forEach(ev=>{
-
-b.addEventListener(ev,()=>keys[k]=false);
-
-});
-
+["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>keys[k]=false));
 });
 
 function tap(k){
-
-let n=performance.now();
-
-if(n-lastTap>4000){
-
-gasTaps=0;
-
-brakeTaps=0;
-
-}
-
-lastTap=n;
-
-if($('cheat').style.display==='block')return;
-
-if(k==='g'){
-
-if(brakeTaps){
-
-gasTaps=1;
-
-brakeTaps=0;
-
-}else gasTaps++;
-
+const now=performance.now();
+if(now-lastTap>4000){gasTaps=0;brakeTaps=0;}
+lastTap=now;
+if($("cheat").style.display==="block")return;
+if(k==="g"){
+if(brakeTaps){gasTaps=1;brakeTaps=0;}
+else gasTaps++;
 }else if(gasTaps===6){
-
 brakeTaps++;
-
 if(brakeTaps===7){
-
 gasTaps=brakeTaps=0;
-
-$('cheat').style.display='block';
-
+$("cheat").style.display="block";
 }
-
-}else{
-
-gasTaps=brakeTaps=0;
-
+}else{gasTaps=0;brakeTaps=0;}
 }
+$("cheatspeed").oninput=e=>cheat.speed=Number(e.target.value);
+$("cheatgrip").oninput=e=>cheat.grip=Number(e.target.value);
+$("cheatacc").oninput=e=>cheat.acc=Number(e.target.value);
+$("closecheat").onclick=()=>$("cheat").style.display="none";
 
-}
-
-$('cheatspeed').oninput=e=>cheat.speed=Number(e.target.value);
-
-$('cheatgrip').oninput=e=>cheat.grip=Number(e.target.value);
-
-$('cheatacc').oninput=e=>cheat.acc=Number(e.target.value);
-
-$('closecheat').onclick=()=>$('cheat').style.display='none';
-
-window.addEventListener('resize',()=>{
-
+window.addEventListener("resize",()=>{
 if(camera&&renderer){
-
 camera.aspect=innerWidth/innerHeight;
-
 camera.updateProjectionMatrix();
-
 renderer.setSize(innerWidth,innerHeight);
-
 }
-
 });
-
 })();
-
 </script>
-
 </body>
-
 </html>
